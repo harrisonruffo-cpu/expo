@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Prevent an FCM `dataString` field from overriding the notification's derived data. ([#49274](https://github.com/expo/expo/pull/49274) by [@vonovak](https://github.com/vonovak))
 - [Android] Prevent a crash when reading the notification large icon from a manifest without meta-data. ([#49273](https://github.com/expo/expo/pull/49273) by [@vonovak](https://github.com/vonovak))
 - [Android] Prevented `onUserLeaveHint` from firing when a notification tap opens the app, which made picture-in-picture implementations enter PiP unexpectedly. ([#48471](https://github.com/expo/expo/pull/48471) by [@stareezy-1](https://github.com/stareezy-1))
 - [iOS] Avoid warning when an aborted push token registration request rejects with a native fetch cancellation error. ([#48547](https://github.com/expo/expo/pull/48547) by [@JoaoPauloCMarra](https://github.com/JoaoPauloCMarra))
