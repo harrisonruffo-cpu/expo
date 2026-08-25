@@ -244,6 +244,9 @@ export function useNavigationTreeReducer({
         ? payload.params
         : undefined;
     warnIfScreenParam(params);
+    // Calling the effect event from an event handler works at runtime; the rule only
+    // accepts calls from effects.
+    // oxlint-disable-next-line react-hooks/rules-of-hooks
     process({ type: 'ACTION', payload: { action, originKey } });
   });
   const getState = React.useCallback(() => stateRef.current, []);
@@ -252,6 +255,9 @@ export function useNavigationTreeReducer({
     []
   );
   const resetNavigator = useLatestCallback((stateKey: string, routerType: string | undefined) => {
+    // Calling the effect event from an event handler works at runtime; the rule only
+    // accepts calls from effects.
+    // oxlint-disable-next-line react-hooks/rules-of-hooks
     process({ type: 'NAVIGATOR_CHANGED', stateKey, routerType });
   });
 
@@ -265,6 +271,9 @@ export function useNavigationTreeReducer({
     previousRegistryRef.current = registry;
     for (const [stateKey, entry] of previousRegistry) {
       if (!registry.has(stateKey) && entry.routeNode) {
+        // This runs inside an effect; the rule doesn't recognize the `useClientLayoutEffect`
+        // wrapper as one.
+        // oxlint-disable-next-line react-hooks/rules-of-hooks
         process({ type: 'NAVIGATOR_UNMOUNTED', stateKey, routeNode: entry.routeNode });
       }
     }
