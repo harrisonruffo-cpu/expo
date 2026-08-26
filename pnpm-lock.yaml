@@ -1856,6 +1856,9 @@ importers:
       '@expo/package-manager':
         specifier: workspace:^1.12.0
         version: link:../package-manager
+      '@expo/platforms':
+        specifier: workspace:^0.1.0
+        version: link:../platforms
       '@expo/plist':
         specifier: workspace:^0.7.0
         version: link:../plist
@@ -2148,6 +2151,9 @@ importers:
       '@expo/json-file':
         specifier: workspace:^10.2.0
         version: link:../json-file
+      '@expo/platforms':
+        specifier: workspace:^0.1.0
+        version: link:../platforms
       '@expo/require-utils':
         specifier: workspace:^56.1.3
         version: link:../require-utils
@@ -2618,6 +2624,9 @@ importers:
       '@expo/metro':
         specifier: ~56.0.2
         version: 56.0.2
+      '@expo/platforms':
+        specifier: workspace:^0.1.0
+        version: link:../platforms
       '@expo/require-utils':
         specifier: workspace:^56.1.3
         version: link:../require-utils
@@ -2870,6 +2879,12 @@ importers:
       '@types/node-forge':
         specifier: ^1.0.0
         version: 1.3.14
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../../expo-module-scripts
+
+  packages/@expo/platforms:
+    devDependencies:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -5100,6 +5115,9 @@ importers:
 
   packages/expo-modules-autolinking:
     dependencies:
+      '@expo/platforms':
+        specifier: workspace:^0.1.0
+        version: link:../@expo/platforms
       '@expo/require-utils':
         specifier: workspace:^56.1.3
         version: link:../@expo/require-utils
