@@ -1,11 +1,11 @@
 'use client';
 
-import { store } from '../global-state/store';
+import { navigationRef } from '../global-state/navigationRef';
 
 /**
  * @deprecated Use [`useNavigationContainerRef`](#usenavigationcontainerref) instead,
  * which returns a React `ref`.
  */
 export function useRootNavigation() {
-  return store.navigationRef.current;
+  return navigationRef.current;
 }

@@ -6,9 +6,9 @@ import {
   createSeededRootState,
 } from '../global-state/createSeededNavigationState';
 import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
+import { RouterConfigContext } from '../global-state/routerConfigContext';
 import type { RoutingIntent } from '../global-state/routingQueue';
 import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
-import { StoreContext } from '../global-state/storeContext';
 import { getRootStackRouteNames } from '../global-state/utils';
 import {
   type LinkingOptions,
@@ -44,7 +44,7 @@ export function useLinking(
   }: Options,
   onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
 ) {
-  const store = use(StoreContext);
+  const routerConfig = use(RouterConfigContext);
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
@@ -85,7 +85,7 @@ export function useLinking(
       }
 
       const parsedState = path ? getStateFromPath(path, config) : undefined;
-      const routeNode = store?.routeNode;
+      const routeNode = routerConfig?.routeNode;
       const state = routeNode
         ? createSeededRootState(parsedState, routeNode)
         : completeParsedState(parsedState, ROOT_CHAIN);
@@ -180,7 +180,7 @@ function useBrowserHistorySync({
   getPathFromState: GetPathFromState;
   onUnhandledLinking: (path: string | undefined) => void;
 }) {
-  const store = use(StoreContext);
+  const routerConfig = use(RouterConfigContext);
   const enqueue = useEnqueueRoutingIntent();
   const [history] = useState(createMemoryHistory);
   const configRef = useRef(config);
@@ -241,19 +241,16 @@ function useBrowserHistorySync({
         return;
       }
 
-      const parsedState = getStateFromPathRef.current(
-        path,
-        configRef.current,
-        getRouteInfoFromState(store?.state).segments
-      );
+      const segments = getRouteInfoFromState(navigation.getRootState()).segments;
+      const parsedState = getStateFromPathRef.current(path, configRef.current, segments);
       if (parsedState) {
         onUnhandledLinking(path);
         const routeNames = getRootStackRouteNames();
         if (parsedState.routes.some((route) => !routeNames.includes(route.name))) {
           return;
         }
-        const state = store?.routeNode
-          ? createSeededRootState(parsedState, store.routeNode)
+        const state = routerConfig?.routeNode
+          ? createSeededRootState(parsedState, routerConfig.routeNode)
           : completeParsedState(parsedState, ROOT_CHAIN);
         if (!state) {
           return;
@@ -327,12 +324,10 @@ function useBrowserHistorySync({
 
     if (ref.current) {
       const rootState = ref.current.getRootState();
-      const state = store?.state as NavigationState | undefined;
-
-      if (state) {
-        const path = getPathForRoute(findFocusedRoute(state), state);
+      if (rootState) {
+        const path = getPathForRoute(findFocusedRoute(rootState), rootState);
         previousStateRef.current ??= rootState;
-        history.replace({ path, state });
+        history.replace({ path, state: rootState });
       }
     }
 
@@ -345,13 +340,11 @@ function useBrowserHistorySync({
 
       const previousState = previousStateRef.current;
       const rootState = navigation.getRootState();
-      const state = store?.state as NavigationState | undefined;
-
-      if (!state) {
+      if (!rootState) {
         return;
       }
 
-      const path = getPathForRoute(findFocusedRoute(state), state);
+      const path = getPathForRoute(findFocusedRoute(rootState), rootState);
       let pendingOperation: { path: string } | undefined;
 
       // React may batch multiple queued actions into one state event, so use the latest match.
@@ -368,14 +361,14 @@ function useBrowserHistorySync({
       }
 
       previousStateRef.current = rootState;
-      const [previousFocusedState, focusedState] = findMatchingState(previousState, state);
+      const [previousFocusedState, focusedState] = findMatchingState(previousState, rootState);
 
       if (previousFocusedState && focusedState && !pendingOperation) {
         const historyDelta =
           getHistoryLength(focusedState) - getHistoryLength(previousFocusedState);
 
         if (historyDelta > 0) {
-          history.push({ path, state });
+          history.push({ path, state: rootState });
         } else if (historyDelta < 0) {
           const nextIndex = history.backIndex({ path });
           const currentIndex = history.index;
@@ -391,15 +384,15 @@ function useBrowserHistorySync({
               await history.go(historyDelta);
             }
 
-            history.replace({ path, state });
+            history.replace({ path, state: rootState });
           } catch {
             // The navigation was interrupted.
           }
         } else {
-          history.replace({ path, state });
+          history.replace({ path, state: rootState });
         }
       } else {
-        history.replace({ path, state });
+        history.replace({ path, state: rootState });
       }
     };
 
