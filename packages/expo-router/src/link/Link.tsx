@@ -33,6 +33,7 @@ export const Link = Object.assign(
    * ```
    */
   function Link(props: LinkProps) {
+    // TODO: Expose pending status scoped to this link's navigation.
     // Re-exporting ExpoLink here so that Link.* can be used in server components.
     return <ExpoLink {...props} />;
   },
